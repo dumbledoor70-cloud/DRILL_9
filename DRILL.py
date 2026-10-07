@@ -71,6 +71,10 @@ MOVE_RIGHT_FRAMES = tuple(
     grid_frame_rect(ROW_MOVE_RIGHT, column)
     for column in range(FRAME_COLUMNS)
 )
+MOVE_LEFT_FRAMES = tuple(
+    grid_frame_rect(ROW_MOVE_LEFT, column)
+    for column in range(FRAME_COLUMNS)
+)
 
 
 def draw_background(background):

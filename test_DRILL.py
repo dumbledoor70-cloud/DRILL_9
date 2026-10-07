@@ -60,6 +60,11 @@ class DrillStartupTests(unittest.TestCase):
         self.assertEqual(DRILL.MOVE_RIGHT_FRAMES[0], DRILL.FrameRect(0, 200, 100, 100))
         self.assertEqual(DRILL.MOVE_RIGHT_FRAMES[-1], DRILL.FrameRect(700, 200, 100, 100))
 
+    def test_left_move_animation_uses_fourth_sprite_row(self):
+        self.assertEqual(len(DRILL.MOVE_LEFT_FRAMES), 8)
+        self.assertEqual(DRILL.MOVE_LEFT_FRAMES[0], DRILL.FrameRect(0, 300, 100, 100))
+        self.assertEqual(DRILL.MOVE_LEFT_FRAMES[-1], DRILL.FrameRect(700, 300, 100, 100))
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):
