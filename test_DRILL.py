@@ -36,6 +36,15 @@ class DrillStartupTests(unittest.TestCase):
         with self.assertRaises(IndexError):
             DRILL.grid_frame_rect(0, 8)
 
+    def test_character_state_starts_centered_facing_right_and_idle(self):
+        state = DRILL.CharacterState()
+
+        self.assertEqual((state.x, state.y), (640, 512))
+        self.assertTrue(state.facing_right)
+        self.assertEqual(state.pressed_keys, set())
+        self.assertEqual(state.frame_index, 0)
+        self.assertEqual(state.current_row, DRILL.ROW_IDLE_RIGHT)
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):

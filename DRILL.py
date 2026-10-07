@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import NamedTuple
 
 from pico2d import clear_canvas, close_canvas, load_image, open_canvas, update_canvas
@@ -45,6 +46,17 @@ def grid_frame_rect(row, column):
         FRAME_WIDTH,
         FRAME_HEIGHT,
     )
+
+
+@dataclass
+class CharacterState:
+    x: float = CANVAS_WIDTH / 2
+    y: float = CANVAS_HEIGHT / 2
+    facing_right: bool = True
+    pressed_keys: set = field(default_factory=set)
+    frame_index: int = 0
+    current_row: int = ROW_IDLE_RIGHT
+    next_frame_time: float = 0.0
 
 
 def draw_background(background):
