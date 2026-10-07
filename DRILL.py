@@ -72,6 +72,7 @@ class CharacterState:
     frame_index: int = 0
     current_row: int = ROW_IDLE_RIGHT
     next_frame_time: float = 0.0
+    last_update_time: float | None = None
     running: bool = True
 
 
@@ -156,6 +157,22 @@ def clamp_position(state, frame_width=FRAME_WIDTH, frame_height=FRAME_HEIGHT):
     state.x = min(max(state.x, half_width), CANVAS_WIDTH - half_width)
     state.y = min(max(state.y, half_height), CANVAS_HEIGHT - half_height)
     return state.x, state.y
+
+
+def update_character(state, now):
+    elapsed_seconds = 0.0 if state.last_update_time is None else max(0.0, now - state.last_update_time)
+    state.last_update_time = now
+    direction_x, direction_y = get_movement_vector(state)
+    moving = direction_x != 0.0 or direction_y != 0.0
+    selected_row = select_animation_row(moving, state.facing_right)
+    if selected_row != state.current_row:
+        state.current_row = selected_row
+        state.frame_index = 0
+        state.next_frame_time = now + FRAME_INTERVAL_SECONDS
+    frame = update_animation(state, moving, now)
+    update_position(state, direction_x, direction_y, elapsed_seconds)
+    clamp_position(state)
+    return frame
 
 
 def draw_background(background):

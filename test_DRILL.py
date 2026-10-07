@@ -140,6 +140,35 @@ class DrillStartupTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             DRILL.clamp_position(state, frame_width=1300, frame_height=100)
 
+    def test_update_character_integrates_idle_input_move_and_facing(self):
+        state = DRILL.CharacterState()
+
+        frame = DRILL.update_character(state, 0.0)
+        self.assertEqual(state.current_row, DRILL.ROW_IDLE_RIGHT)
+        self.assertEqual((state.x, state.y), (640, 512))
+        self.assertEqual(frame, DRILL.grid_frame_rect(DRILL.ROW_IDLE_RIGHT, 0))
+
+        DRILL.handle_key_event(
+            state,
+            SimpleNamespace(type=DRILL.SDL_KEYDOWN, key=DRILL.SDLK_LEFT),
+        )
+        frame = DRILL.update_character(state, 0.1)
+        self.assertEqual(state.current_row, DRILL.ROW_MOVE_LEFT)
+        self.assertEqual((state.x, state.y), (630.0, 512.0))
+        self.assertEqual(frame, DRILL.grid_frame_rect(DRILL.ROW_MOVE_LEFT, 0))
+
+        DRILL.handle_key_event(
+            state,
+            SimpleNamespace(type=DRILL.SDL_KEYUP, key=DRILL.SDLK_LEFT),
+        )
+        DRILL.handle_key_event(
+            state,
+            SimpleNamespace(type=DRILL.SDL_KEYDOWN, key=DRILL.SDLK_UP),
+        )
+        DRILL.update_character(state, 0.2)
+        self.assertEqual(state.current_row, DRILL.ROW_MOVE_LEFT)
+        self.assertFalse(state.facing_right)
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):
