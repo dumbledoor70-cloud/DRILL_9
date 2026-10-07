@@ -1,7 +1,21 @@
 from dataclasses import dataclass, field
 from typing import NamedTuple
 
-from pico2d import clear_canvas, close_canvas, load_image, open_canvas, update_canvas
+from pico2d import (
+    SDL_KEYDOWN,
+    SDL_KEYUP,
+    SDL_QUIT,
+    SDLK_DOWN,
+    SDLK_ESCAPE,
+    SDLK_LEFT,
+    SDLK_RIGHT,
+    SDLK_UP,
+    clear_canvas,
+    close_canvas,
+    load_image,
+    open_canvas,
+    update_canvas,
+)
 
 
 CANVAS_WIDTH = 1280
@@ -57,6 +71,7 @@ class CharacterState:
     frame_index: int = 0
     current_row: int = ROW_IDLE_RIGHT
     next_frame_time: float = 0.0
+    running: bool = True
 
 
 IDLE_RIGHT_FRAMES = tuple(
@@ -95,6 +110,24 @@ def update_animation(state, moving, now):
         state.frame_index = (state.frame_index + 1) % FRAME_COLUMNS
         state.next_frame_time = now + FRAME_INTERVAL_SECONDS
     return grid_frame_rect(state.current_row, state.frame_index)
+
+
+def handle_key_event(state, event):
+    if event.type == SDL_QUIT:
+        state.running = False
+        return
+    if event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+        state.running = False
+        return
+    if event.type == SDL_KEYDOWN:
+        if event.key in (SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT):
+            state.pressed_keys.add(event.key)
+        if event.key == SDLK_LEFT:
+            state.facing_right = False
+        elif event.key == SDLK_RIGHT:
+            state.facing_right = True
+    elif event.type == SDL_KEYUP:
+        state.pressed_keys.discard(event.key)
 
 
 def draw_background(background):

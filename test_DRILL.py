@@ -1,4 +1,5 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import DRILL
@@ -79,6 +80,29 @@ class DrillStartupTests(unittest.TestCase):
         self.assertEqual(DRILL.update_animation(state, False, 1.05), DRILL.FrameRect(100, 0, 100, 100))
         self.assertEqual(DRILL.update_animation(state, True, 1.06), DRILL.FrameRect(0, 200, 100, 100))
         self.assertEqual(state.frame_index, 0)
+
+    def test_keydown_keyup_updates_pressed_keys_and_facing(self):
+        state = DRILL.CharacterState()
+
+        DRILL.handle_key_event(state, SimpleNamespace(type=DRILL.SDL_KEYDOWN, key=DRILL.SDLK_LEFT))
+        self.assertIn(DRILL.SDLK_LEFT, state.pressed_keys)
+        self.assertFalse(state.facing_right)
+
+        DRILL.handle_key_event(state, SimpleNamespace(type=DRILL.SDL_KEYUP, key=DRILL.SDLK_LEFT))
+        self.assertNotIn(DRILL.SDLK_LEFT, state.pressed_keys)
+
+        DRILL.handle_key_event(state, SimpleNamespace(type=DRILL.SDL_KEYDOWN, key=DRILL.SDLK_RIGHT))
+        self.assertTrue(state.facing_right)
+
+    def test_escape_and_window_close_request_shutdown(self):
+        for event in (
+            SimpleNamespace(type=DRILL.SDL_KEYDOWN, key=DRILL.SDLK_ESCAPE),
+            SimpleNamespace(type=DRILL.SDL_QUIT),
+        ):
+            with self.subTest(event=event):
+                state = DRILL.CharacterState()
+                DRILL.handle_key_event(state, event)
+                self.assertFalse(state.running)
 
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
