@@ -129,6 +129,17 @@ class DrillStartupTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             DRILL.update_position(state, 1.0, 0.0, -0.1)
 
+    def test_position_clamp_keeps_full_frame_inside_all_edges(self):
+        state = DRILL.CharacterState(x=-20, y=1100)
+        self.assertEqual(DRILL.clamp_position(state), (50.0, 974.0))
+
+        state.x = 1300
+        state.y = -30
+        self.assertEqual(DRILL.clamp_position(state), (1230.0, 50.0))
+
+        with self.assertRaises(ValueError):
+            DRILL.clamp_position(state, frame_width=1300, frame_height=100)
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):

@@ -148,6 +148,16 @@ def update_position(state, direction_x, direction_y, elapsed_seconds):
     return state.x, state.y
 
 
+def clamp_position(state, frame_width=FRAME_WIDTH, frame_height=FRAME_HEIGHT):
+    half_width = frame_width * SPRITE_SCALE / 2
+    half_height = frame_height * SPRITE_SCALE / 2
+    if frame_width * SPRITE_SCALE > CANVAS_WIDTH or frame_height * SPRITE_SCALE > CANVAS_HEIGHT:
+        raise ValueError("Scaled character frame is larger than the canvas")
+    state.x = min(max(state.x, half_width), CANVAS_WIDTH - half_width)
+    state.y = min(max(state.y, half_height), CANVAS_HEIGHT - half_height)
+    return state.x, state.y
+
+
 def draw_background(background):
     clear_canvas()
     background.draw(CENTER_X, CENTER_Y)
