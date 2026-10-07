@@ -169,6 +169,33 @@ class DrillStartupTests(unittest.TestCase):
         self.assertEqual(state.current_row, DRILL.ROW_MOVE_LEFT)
         self.assertFalse(state.facing_right)
 
+    def test_render_scene_draws_background_then_selected_frame(self):
+        class FakeBackground:
+            def __init__(self, calls):
+                self.calls = calls
+
+            def draw(self, x, y):
+                self.calls.append(("background", x, y))
+
+        class FakeSpriteSheet:
+            def __init__(self, calls):
+                self.calls = calls
+
+            def clip_draw(self, *arguments):
+                self.calls.append(("character", *arguments))
+
+        calls = []
+        state = DRILL.CharacterState(x=400, y=300)
+        frame = DRILL.FrameRect(100, 200, 100, 100)
+        with (
+            patch.object(DRILL, "clear_canvas"),
+            patch.object(DRILL, "update_canvas"),
+        ):
+            DRILL.render_scene(FakeBackground(calls), FakeSpriteSheet(calls), state, frame)
+
+        self.assertEqual(calls[0], ("background", 640, 512))
+        self.assertEqual(calls[1], ("character", 100, 102, 100, 100, 400, 300, 100, 100))
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):
@@ -179,11 +206,14 @@ class DrillStartupTests(unittest.TestCase):
 
         background = FakeBackground()
         loaded_images = iter([background, object()])
+        events = [[SimpleNamespace(type=DRILL.SDL_QUIT)]]
         with (
             patch.object(DRILL, "open_canvas") as open_canvas,
             patch.object(DRILL, "load_image", side_effect=lambda _path: next(loaded_images)) as load_image,
-            patch.object(DRILL, "clear_canvas"),
-            patch.object(DRILL, "update_canvas"),
+            patch.object(DRILL, "get_events", side_effect=events),
+            patch.object(DRILL, "monotonic", return_value=0.0),
+            patch.object(DRILL, "render_scene") as render_scene,
+            patch.object(DRILL, "delay"),
             patch.object(DRILL, "close_canvas") as close_canvas,
         ):
             DRILL.main()
@@ -193,7 +223,9 @@ class DrillStartupTests(unittest.TestCase):
             [call.args[0] for call in load_image.call_args_list],
             ["TUK_GROUND.png", "animation_sheet.png"],
         )
-        self.assertEqual(background.draw_calls, [(640, 512)])
+        render_scene.assert_called_once()
+        self.assertIs(render_scene.call_args.args[0], background)
+        self.assertEqual(render_scene.call_args.args[2].current_row, DRILL.ROW_IDLE_RIGHT)
         close_canvas.assert_called_once_with()
 
 

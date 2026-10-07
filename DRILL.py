@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from math import hypot
+from time import monotonic
 from typing import NamedTuple
 
 from pico2d import (
@@ -15,6 +16,8 @@ from pico2d import (
     close_canvas,
     load_image,
     open_canvas,
+    get_events,
+    delay,
     update_canvas,
 )
 
@@ -175,6 +178,20 @@ def update_character(state, now):
     return frame
 
 
+def render_scene(background, sprite_sheet, state, frame):
+    clear_canvas()
+    background.draw(CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2)
+    source_rect = frame.to_pico2d(SPRITE_SHEET_HEIGHT)
+    sprite_sheet.clip_draw(
+        *source_rect,
+        state.x,
+        state.y,
+        frame.width * SPRITE_SCALE,
+        frame.height * SPRITE_SCALE,
+    )
+    update_canvas()
+
+
 def draw_background(background):
     clear_canvas()
     background.draw(CENTER_X, CENTER_Y)
@@ -183,10 +200,19 @@ def draw_background(background):
 
 def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+    background = None
+    sprite_sheet = None
     try:
         background = load_image(BACKGROUND_PATH)
         sprite_sheet = load_image(SPRITE_SHEET_PATH)
-        draw_background(background)
+        state = CharacterState()
+        while state.running:
+            for event in get_events():
+                handle_key_event(state, event)
+            now = monotonic()
+            frame = update_character(state, now)
+            render_scene(background, sprite_sheet, state, frame)
+            delay(0.005)
     finally:
         background = None
         sprite_sheet = None
