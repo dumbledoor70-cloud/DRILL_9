@@ -140,6 +140,14 @@ def get_movement_vector(state):
     return 0.0, 0.0
 
 
+def update_position(state, direction_x, direction_y, elapsed_seconds):
+    if elapsed_seconds < 0:
+        raise ValueError("Elapsed time cannot be negative")
+    state.x += direction_x * MOVEMENT_SPEED * elapsed_seconds
+    state.y += direction_y * MOVEMENT_SPEED * elapsed_seconds
+    return state.x, state.y
+
+
 def draw_background(background):
     clear_canvas()
     background.draw(CENTER_X, CENTER_Y)

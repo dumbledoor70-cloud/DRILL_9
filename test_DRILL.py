@@ -115,6 +115,20 @@ class DrillStartupTests(unittest.TestCase):
         state.pressed_keys.update((DRILL.SDLK_LEFT, DRILL.SDLK_DOWN))
         self.assertEqual(DRILL.get_movement_vector(state), (0.0, 0.0))
 
+    def test_position_update_uses_elapsed_seconds_and_normalized_speed(self):
+        state = DRILL.CharacterState()
+        self.assertEqual(DRILL.update_position(state, 1.0, 0.0, 0.5), (690.0, 512.0))
+
+        diagonal = DRILL.CharacterState()
+        direction = 2 ** -0.5
+        x, y = DRILL.update_position(diagonal, direction, direction, 0.5)
+        self.assertAlmostEqual(x - 640, 50 * direction)
+        self.assertAlmostEqual(y - 512, 50 * direction)
+        self.assertAlmostEqual(((x - 640) ** 2 + (y - 512) ** 2) ** 0.5, 50.0)
+
+        with self.assertRaises(ValueError):
+            DRILL.update_position(state, 1.0, 0.0, -0.1)
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):
