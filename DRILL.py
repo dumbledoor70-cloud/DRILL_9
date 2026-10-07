@@ -63,6 +63,10 @@ IDLE_RIGHT_FRAMES = tuple(
     grid_frame_rect(ROW_IDLE_RIGHT, column)
     for column in range(FRAME_COLUMNS)
 )
+IDLE_LEFT_FRAMES = tuple(
+    grid_frame_rect(ROW_IDLE_LEFT, column)
+    for column in range(FRAME_COLUMNS)
+)
 
 
 def draw_background(background):
