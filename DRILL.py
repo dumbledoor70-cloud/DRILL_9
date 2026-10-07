@@ -77,6 +77,12 @@ MOVE_LEFT_FRAMES = tuple(
 )
 
 
+def select_animation_row(moving, facing_right):
+    if moving:
+        return ROW_MOVE_RIGHT if facing_right else ROW_MOVE_LEFT
+    return ROW_IDLE_RIGHT if facing_right else ROW_IDLE_LEFT
+
+
 def draw_background(background):
     clear_canvas()
     background.draw(CENTER_X, CENTER_Y)
