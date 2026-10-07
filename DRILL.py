@@ -13,6 +13,10 @@ FRAME_WIDTH = 100
 FRAME_HEIGHT = 100
 FRAME_COLUMNS = 8
 ANIMATION_ROWS = 4
+ROW_IDLE_RIGHT = 0
+ROW_IDLE_LEFT = 1
+ROW_MOVE_RIGHT = 2
+ROW_MOVE_LEFT = 3
 FRAME_INTERVAL_SECONDS = 0.05
 MOVEMENT_SPEED = 100.0
 SPRITE_SCALE = 1.0
@@ -28,6 +32,19 @@ class FrameRect(NamedTuple):
 
     def to_pico2d(self, sheet_height):
         return self.x, sheet_height - self.y - self.height, self.width, self.height
+
+
+def grid_frame_rect(row, column):
+    if not 0 <= row < ANIMATION_ROWS:
+        raise IndexError("Animation row is outside the sprite sheet")
+    if not 0 <= column < FRAME_COLUMNS:
+        raise IndexError("Frame column is outside the sprite sheet")
+    return FrameRect(
+        column * FRAME_WIDTH,
+        row * FRAME_HEIGHT,
+        FRAME_WIDTH,
+        FRAME_HEIGHT,
+    )
 
 
 def draw_background(background):

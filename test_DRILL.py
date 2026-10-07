@@ -21,6 +21,21 @@ class DrillStartupTests(unittest.TestCase):
 
         self.assertEqual(frame.to_pico2d(402), (10, 342, 30, 40))
 
+    def test_grid_has_eight_columns_and_four_in_bounds_rows(self):
+        self.assertEqual(
+            (DRILL.FRAME_COLUMNS, DRILL.ANIMATION_ROWS),
+            (8, 4),
+        )
+        for row in range(DRILL.ANIMATION_ROWS):
+            for column in range(DRILL.FRAME_COLUMNS):
+                frame = DRILL.grid_frame_rect(row, column)
+                self.assertLessEqual(frame.x + frame.width, DRILL.SPRITE_SHEET_WIDTH)
+                self.assertLessEqual(frame.y + frame.height, DRILL.SPRITE_SHEET_HEIGHT)
+        with self.assertRaises(IndexError):
+            DRILL.grid_frame_rect(4, 0)
+        with self.assertRaises(IndexError):
+            DRILL.grid_frame_rect(0, 8)
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):
