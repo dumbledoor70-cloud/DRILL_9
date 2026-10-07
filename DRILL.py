@@ -59,6 +59,12 @@ class CharacterState:
     next_frame_time: float = 0.0
 
 
+IDLE_RIGHT_FRAMES = tuple(
+    grid_frame_rect(ROW_IDLE_RIGHT, column)
+    for column in range(FRAME_COLUMNS)
+)
+
+
 def draw_background(background):
     clear_canvas()
     background.draw(CENTER_X, CENTER_Y)

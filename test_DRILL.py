@@ -45,6 +45,11 @@ class DrillStartupTests(unittest.TestCase):
         self.assertEqual(state.frame_index, 0)
         self.assertEqual(state.current_row, DRILL.ROW_IDLE_RIGHT)
 
+    def test_right_idle_animation_has_eight_ordered_frames(self):
+        self.assertEqual(len(DRILL.IDLE_RIGHT_FRAMES), 8)
+        self.assertEqual(DRILL.IDLE_RIGHT_FRAMES[0], DRILL.FrameRect(0, 0, 100, 100))
+        self.assertEqual(DRILL.IDLE_RIGHT_FRAMES[-1], DRILL.FrameRect(700, 0, 100, 100))
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):
