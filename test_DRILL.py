@@ -19,11 +19,16 @@ class DrillStartupTests(unittest.TestCase):
     def test_main_closes_canvas_after_startup(self):
         with (
             patch.object(DRILL, "open_canvas") as open_canvas,
+            patch.object(DRILL, "load_image", return_value=object()) as load_image,
             patch.object(DRILL, "close_canvas") as close_canvas,
         ):
             DRILL.main()
 
         open_canvas.assert_called_once_with(1280, 1024)
+        self.assertEqual(
+            [call.args[0] for call in load_image.call_args_list],
+            ["TUK_GROUND.png", "animation_sheet.png"],
+        )
         close_canvas.assert_called_once_with()
 
 

@@ -1,4 +1,4 @@
-from pico2d import close_canvas, open_canvas
+from pico2d import close_canvas, load_image, open_canvas
 
 
 CANVAS_WIDTH = 1280
@@ -19,8 +19,11 @@ SPRITE_SCALE = 1.0
 def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
-        pass
+        background = load_image(BACKGROUND_PATH)
+        sprite_sheet = load_image(SPRITE_SHEET_PATH)
     finally:
+        background = None
+        sprite_sheet = None
         close_canvas()
 
 
