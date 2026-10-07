@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from math import hypot
 from typing import NamedTuple
 
 from pico2d import (
@@ -128,6 +129,15 @@ def handle_key_event(state, event):
             state.facing_right = True
     elif event.type == SDL_KEYUP:
         state.pressed_keys.discard(event.key)
+
+
+def get_movement_vector(state):
+    direction_x = int(SDLK_RIGHT in state.pressed_keys) - int(SDLK_LEFT in state.pressed_keys)
+    direction_y = int(SDLK_UP in state.pressed_keys) - int(SDLK_DOWN in state.pressed_keys)
+    length = hypot(direction_x, direction_y)
+    if length:
+        return direction_x / length, direction_y / length
+    return 0.0, 0.0
 
 
 def draw_background(background):

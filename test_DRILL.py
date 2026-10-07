@@ -104,6 +104,17 @@ class DrillStartupTests(unittest.TestCase):
                 DRILL.handle_key_event(state, event)
                 self.assertFalse(state.running)
 
+    def test_movement_vector_supports_diagonal_and_opposing_keys_cancel(self):
+        state = DRILL.CharacterState()
+        state.pressed_keys.update((DRILL.SDLK_RIGHT, DRILL.SDLK_UP))
+        x_direction, y_direction = DRILL.get_movement_vector(state)
+        self.assertAlmostEqual(x_direction, 2 ** -0.5)
+        self.assertAlmostEqual(y_direction, 2 ** -0.5)
+        self.assertAlmostEqual((x_direction**2 + y_direction**2) ** 0.5, 1.0)
+
+        state.pressed_keys.update((DRILL.SDLK_LEFT, DRILL.SDLK_DOWN))
+        self.assertEqual(DRILL.get_movement_vector(state), (0.0, 0.0))
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):
