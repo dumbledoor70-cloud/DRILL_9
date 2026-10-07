@@ -83,6 +83,20 @@ def select_animation_row(moving, facing_right):
     return ROW_IDLE_RIGHT if facing_right else ROW_IDLE_LEFT
 
 
+def update_animation(state, moving, now):
+    selected_row = select_animation_row(moving, state.facing_right)
+    if selected_row != state.current_row:
+        state.current_row = selected_row
+        state.frame_index = 0
+        state.next_frame_time = now + FRAME_INTERVAL_SECONDS
+    elif state.next_frame_time == 0.0:
+        state.next_frame_time = now + FRAME_INTERVAL_SECONDS
+    elif now >= state.next_frame_time:
+        state.frame_index = (state.frame_index + 1) % FRAME_COLUMNS
+        state.next_frame_time = now + FRAME_INTERVAL_SECONDS
+    return grid_frame_rect(state.current_row, state.frame_index)
+
+
 def draw_background(background):
     clear_canvas()
     background.draw(CENTER_X, CENTER_Y)

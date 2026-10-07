@@ -71,6 +71,15 @@ class DrillStartupTests(unittest.TestCase):
         self.assertEqual(DRILL.select_animation_row(True, True), DRILL.ROW_MOVE_RIGHT)
         self.assertEqual(DRILL.select_animation_row(True, False), DRILL.ROW_MOVE_LEFT)
 
+    def test_animation_advance_uses_elapsed_frame_intervals(self):
+        state = DRILL.CharacterState()
+
+        self.assertEqual(DRILL.update_animation(state, False, 1.0), DRILL.FrameRect(0, 0, 100, 100))
+        self.assertEqual(DRILL.update_animation(state, False, 1.049), DRILL.FrameRect(0, 0, 100, 100))
+        self.assertEqual(DRILL.update_animation(state, False, 1.05), DRILL.FrameRect(100, 0, 100, 100))
+        self.assertEqual(DRILL.update_animation(state, True, 1.06), DRILL.FrameRect(0, 200, 100, 100))
+        self.assertEqual(state.frame_index, 0)
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):
