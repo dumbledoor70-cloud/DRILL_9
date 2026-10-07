@@ -16,6 +16,11 @@ class DrillStartupTests(unittest.TestCase):
         self.assertEqual(DRILL.FRAME_INTERVAL_SECONDS, 0.05)
         self.assertEqual(DRILL.MOVEMENT_SPEED, 100.0)
 
+    def test_frame_rect_converts_top_origin_to_pico2d_coordinates(self):
+        frame = DRILL.FrameRect(10, 20, 30, 40)
+
+        self.assertEqual(frame.to_pico2d(402), (10, 342, 30, 40))
+
     def test_main_closes_canvas_after_startup(self):
         class FakeBackground:
             def __init__(self):

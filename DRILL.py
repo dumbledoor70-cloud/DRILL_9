@@ -1,3 +1,5 @@
+from typing import NamedTuple
+
 from pico2d import clear_canvas, close_canvas, load_image, open_canvas, update_canvas
 
 
@@ -16,6 +18,16 @@ MOVEMENT_SPEED = 100.0
 SPRITE_SCALE = 1.0
 CENTER_X = CANVAS_WIDTH // 2
 CENTER_Y = CANVAS_HEIGHT // 2
+
+
+class FrameRect(NamedTuple):
+    x: int
+    y: int
+    width: int
+    height: int
+
+    def to_pico2d(self, sheet_height):
+        return self.x, sheet_height - self.y - self.height, self.width, self.height
 
 
 def draw_background(background):
